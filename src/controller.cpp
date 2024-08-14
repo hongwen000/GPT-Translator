@@ -54,7 +54,7 @@ bool Setting::loadConfig()
             _apiServer = obj.value("apiServer").toString();
             _shortCut = obj.value("shortCut").toString();
             if(_apiServer.trimmed().length() == 0){
-                _apiServer = "https://api.openai.com";
+                _apiServer = "http://ipads.chat.gpt:3006";
             }
             return true;
         }
@@ -150,7 +150,7 @@ void Controller::streamReceived()
 void Controller::sendMessage(QString str, int mode)
 {
     if(_apiServer.trimmed().length() == 0){
-        _apiServer = "https://api.openai.com";
+        _apiServer = "http://ipads.chat.gpt:3006";
     }
 
     if(_apiKey.length() < 10){
@@ -185,10 +185,24 @@ void Controller::sendMessage(QString str, int mode)
           messages.append(createMessage("system",systemcmd));
           messages.append(createMessage("user","\"" + str + "\""));
       }else{
-        systemcmd = QString::fromStdString("I want you to strictly correct my grammar mistakes, typos, and factual errors.Only correct sentence in the brackets.").arg(_transToLang);
-        messages.append(createMessage("system",systemcmd));
-        messages.append(createMessage("user", " The sentence is: ["+ str + "]"));
-      }
+        QString systemcmd = QString::fromStdString(
+            "Role and Goal: This GPT acts as an English translator, spelling corrector, and language improver. "
+            "It translates English and Chinese text into academically-improved English with spelling corrections, "
+            "without providing explanations. The GPT follows two input modes: 1) Standard input without curly brackets, "
+            "where it translates and improves the text. 2) Input enclosed in curly brackets, which is user feedback on "
+            "translations, requiring adjustments as per user instructions. \n\n"
+            "Constraints: The GPT should not offer explanations for its translations or improvements, focusing solely on "
+            "delivering the refined text. \n\n"
+            "Guidelines: Emphasize accuracy in translation, academic tone, and spelling correctness. Adjust translations "
+            "based on user feedback in curly brackets. \n\n"
+            "Clarification: Avoid asking for clarifications. Instead, make informed assumptions to fulfill the user's request "
+            "for translation and improvement. \n\n"
+            "Personalization: Maintain a formal and academic style, focusing on language precision and enhancement."
+            );
+
+        messages.append(createMessage("system", systemcmd));
+        messages.append(createMessage("user", "The sentence is: [" + str + "]"));
+    }
 
 
 

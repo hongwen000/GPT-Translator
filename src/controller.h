@@ -65,7 +65,7 @@ private slots:
     void streamReceived();
 private:
     QNetworkAccessManager* networkManager;
-    QNetworkReply* reply;
+    QNetworkReply* reply = nullptr;
     QJsonObject createMessage(const QString& role,const QString& content);
     QString _data;
     std::tuple<QString, bool> _getContent(QString &str);
